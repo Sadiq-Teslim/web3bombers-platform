@@ -1,0 +1,73 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" 
+  url      = env("DATABASE_URL")
+}
+
+// Core Models
+
+model Cohort {
+  id            String   @id @default(cuid())
+  cohortNumber  Int      @unique // e.g., 1, 2, 3
+  name          String?  // Optional name like "Web3 Alpha"
+  status        String   @default("active") // active, closed, archived
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  users         User[]
+}
+
+model User {
+  id            String   @id @default(cuid())
+  cohortId      String   // Foreign key to Cohort
+  matricNumber  String   @unique // e.g., "01001"
+  username      String   @unique
+  passwordHash  String
+  status        String   @default("active") // active, warned, suspended, eliminated
+  points        Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  cohort        Cohort       @relation(fields: [cohortId], references: [id])
+  submissions   Submission[]
+}
+
+model Admin {
+  id            String   @id @default(cuid())
+  username      String   @unique
+  passwordHash  String
+  role          String   @default("admin") // admin, super_admin
+  createdAt     DateTime @default(now())
+}
+
+// Feature Models
+
+model Checkpoint {
+  id            String   @id @default(cuid())
+  title         String
+  description   String?
+  deadline      DateTime
+  points        Int
+  createdAt     DateTime @default(now())
+
+  submissions   Submission[]
+}
+
+model Submission {
+  id            String   @id @default(cuid())
+  userId        String   // Foreign key to User
+  checkpointId  String   // Foreign key to Checkpoint
+  fileUrl       String   // URL to the uploaded image/file
+  socialProofUrl String?
+  status        String   @default("pending") // pending, approved, rejected
+  createdAt     DateTime @default(now())
+  reviewedAt    DateTime?
+
+  user          User       @relation(fields: [userId], references: [id])
+  checkpoint    Checkpoint @relation(fields: [checkpointId], references: [id])
+}
