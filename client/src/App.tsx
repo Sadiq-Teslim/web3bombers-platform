@@ -10,7 +10,7 @@ import { SubmissionReviewPage } from "./pages/SubmissionReviewPage";
 
 // Participant Pages
 import { ParticipantLogin } from "./pages/ParticipantLogin"; // <-- Import
-import { ParticipantDashboard } from "./pages/Participantdashboard";
+import { ParticipantDashboard } from "./pages/ParticipantDashboard";
 
 // Components
 import ProtectedRoute from "./components/ProtectedRoute";
